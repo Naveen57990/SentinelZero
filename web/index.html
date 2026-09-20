@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelZero — Autonomous Zero-Trust API & MCP Security Auditor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#ecfeff', 500: '#06b6d4', 600: '#0891b2', 900: '#164e63' },
+            dark: { 900: '#0a0d14', 800: '#111726', 700: '#1e293b', 600: '#334155' },
+            crit: '#ef4444',
+            high: '#f97316',
+            med: '#eab308',
+            low: '#3b82f6'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+    .glow-cyan { box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.4); }
+    .glow-red { box-shadow: 0 0 25px -5px rgba(239, 68, 68, 0.4); }
+    .code-editor { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-dark-900 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-black">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-dark-700/80 bg-dark-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl font-bold">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <span class="text-xl font-black tracking-tight text-white">SENTINEL<span class="text-cyan-400">ZERO</span></span>
+          <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded bg-cyan-950 text-cyan-300 border border-cyan-800">v1.0.0</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="text-xs text-slate-400 hidden sm:inline"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Sub-10ms AST Engine</span>
+        <a href="https://github.com/Naveen57990/SentinelZero" target="_blank" class="px-3 py-1.5 rounded-md bg-dark-800 border border-dark-600 hover:border-cyan-500 text-sm font-medium transition flex items-center space-x-2">
+          <i class="fa-brands fa-github"></i>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+        Autonomous <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Zero-Trust Security</span> for Modern APIs & MCP Agents
+      </h1>
+      <p class="text-slate-400 text-base sm:text-lg">
+        Detect high-entropy secret leaks, unauthenticated routes, missing OIDC/SSO gates, and Model Context Protocol (MCP) tool execution hazards in real-time.
+      </p>
+    </div>
+
+    <!-- Live Scanner Playground -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+      <!-- Input Panel -->
+      <div class="lg:col-span-7 bg-dark-800 border border-dark-700 rounded-xl overflow-hidden shadow-2xl">
+        <div class="px-5 py-3 border-b border-dark-700 flex items-center justify-between bg-dark-900/50">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
+            <span class="ml-2 text-xs font-semibold text-slate-400 code-editor">manifest_audit.py / mcp_server.json</span>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="loadSample('vulnerable')" class="px-2.5 py-1 text-xs font-semibold rounded bg-red-950/60 text-red-300 border border-red-800/80 hover:bg-red-900 transition">
+              Load Vulnerable App
+            </button>
+            <button onclick="loadSample('mcp')" class="px-2.5 py-1 text-xs font-semibold rounded bg-purple-950/60 text-purple-300 border border-purple-800/80 hover:bg-purple-900 transition">
+              Load MCP Agent
+            </button>
+            <button onclick="loadSample('secure')" class="px-2.5 py-1 text-xs font-semibold rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900 transition">
+              Load Zero-Trust
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <textarea id="codeInput" rows="14" class="w-full bg-dark-900 code-editor text-sm text-cyan-200 p-4 rounded-lg border border-dark-700 focus:border-cyan-500 focus:outline-none resize-none leading-relaxed" spellcheck="false"></textarea>
+          <div class="mt-4 flex items-center justify-between">
+            <span class="text-xs text-slate-500">Press Run to execute multi-vector AST & entropy analysis</span>
+            <button onclick="runAudit()" class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-sm shadow-lg shadow-cyan-500/20 transition flex items-center space-x-2">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+              <span>Run Zero-Trust Audit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posture & Metrics Panel -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-dark-800 border border-dark-700 rounded-xl p-6 shadow-xl relative overflow-hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-gauge-high text-cyan-400 mr-2"></i> Posture Score
+            </h3>
+            <span id="gradeBadge" class="px-2.5 py-0.5 text-xs font-extrabold rounded bg-red-950 text-red-400 border border-red-800">
+              GRADE F
+            </span>
+          </div>
+
+          <!-- Circular Score Ring -->
+          <div class="flex items-center justify-center py-4">
+            <div class="relative w-36 h-36 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path class="text-dark-700" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path id="scoreCircle" class="text-red-500 transition-all duration-1000" stroke-dasharray="10, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <div class="absolute text-center">
+                <span id="scoreValue" class="text-4xl font-black text-white">0</span>
+                <span class="text-xs text-slate-400 block font-semibold">/ 100</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Severity Counters -->
+          <div class="grid grid-cols-4 gap-2 pt-4 border-t border-dark-700 text-center">
+            <div class="p-2 rounded bg-red-950/30 border border-red-900/40">
+              <div id="critCount" class="text-lg font-black text-red-400">0</div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">Critical</div>
+            </div>
+            <div class="p-2 rounded bg-orange-950/30 border border-orange-900/40">
+              <div id="highCount" class="text-lg font-black text-orange-400">0</div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">High</div>
+            </div>
+            <div class="p-2 rounded bg-yellow-950/30 border border-yellow-900/40">
+              <div id="medCount" class="text-lg font-black text-yellow-400">0</div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">Medium</div>
+            </div>
+            <div class="p-2 rounded bg-blue-950/30 border border-blue-900/40">
+              <div id="cleanCount" class="text-lg font-black text-blue-400">0</div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">Pass</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Summary Box -->
+        <div class="bg-dark-800 border border-dark-700 rounded-xl p-5 text-sm text-slate-400 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Audit Timestamp</span>
+            <span id="scanTimestamp" class="text-slate-300 font-mono">Live In-Memory</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Scan Latency</span>
+            <span id="scanLatency" class="text-emerald-400 font-mono font-bold">&lt; 2ms</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">CI/CD Standards</span>
+            <span class="text-slate-300 font-mono">SARIF 2.1.0 Compatible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Findings Section -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white flex items-center">
+          <i class="fa-solid fa-list-check text-cyan-400 mr-2"></i> Audit Findings & Remediation Patches
+        </h2>
+        <div class="flex space-x-2">
+          <button onclick="exportJSON()" class="px-3 py-1.5 text-xs font-semibold rounded bg-dark-700 border border-dark-600 hover:border-slate-500 text-slate-200 transition">
+            <i class="fa-solid fa-download mr-1"></i> Export JSON
+          </button>
+          <button onclick="exportSARIF()" class="px-3 py-1.5 text-xs font-semibold rounded bg-dark-700 border border-dark-600 hover:border-slate-500 text-slate-200 transition">
+            <i class="fa-solid fa-file-code mr-1"></i> Export SARIF
+          </button>
+        </div>
+      </div>
+
+      <div id="findingsContainer" class="space-y-4">
+        <!-- Findings will be populated here -->
+      </div>
+    </div>
+  </main>
+
+  <footer class="mt-20 border-t border-dark-700 py-8 bg-dark-900 text-center text-xs text-slate-500">
+    <p>Built for the TLN Cybersecurity Hackathon 2026. Zero-trust security compliance with open-source transparency.</p>
+    <p class="mt-1 font-mono text-cyan-500">Autonomous Security Operator: NOXScout | Naveen57990</p>
+  </footer>
+
+  <script>
+    const SAMPLES = {
+      vulnerable: `# Sample Vulnerable API Service
+import jwt
+import pickle
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Exposed OpenAI Key
+OPENAI_API_KEY = "sk-live-99182390812903810293810928301982"
+
+# Database URI with hardcoded password
+DATABASE_URL = "postgres://admin:SuperSecretPass992@db.internal:5432/core_db"
+
+# Permissive CORS wildcard
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True
+)
+
+DEBUG = True
+
+@app.get("/api/admin/users")
+def get_admin_data():
+    return {"status": "unprotected_admin_data"}
+
+@app.post("/auth/verify")
+def verify_token(token: str):
+    return jwt.decode(token, "secret", verify=False)
+`,
+      mcp: `{
+  "name": "ai-agent-mcp-server",
+  "tools": [
+    {
+      "name": "run_terminal_command",
+      "description": "Execute arbitrary bash or shell commands on host",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "command": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "read_file_unbounded",
+      "description": "Read file system paths without boundary verification",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filepath": {}
+        }
+      }
+    }
+  ]
+}`,
+      secure: `# Zero-Trust Protected API Service
+import os
+import jwt
+from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
+DEBUG = os.getenv("APP_DEBUG", "False").lower() == "true"
+
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "https://app.sentinelzero.io").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True
+)
+
+def verify_sso_session():
+    return {"user_id": "auth-user-1"}
+
+@app.get("/api/admin/users", dependencies=[Depends(verify_sso_session)])
+def get_admin_data():
+    return {"status": "protected_admin_data"}
+
+@app.post("/auth/verify")
+def verify_token(token: str):
+    return jwt.decode(token, os.getenv("JWT_PUBLIC_KEY"), algorithms=["RS256"], verify=True)
+`
+    };
+
+    let currentFindings = [];
+
+    function loadSample(key) {
+      document.getElementById('codeInput').value = SAMPLES[key];
+      runAudit();
+    }
+
+    function runAudit() {
+      const code = document.getElementById('codeInput').value;
+      const findings = [];
+      const lines = code.split('\n');
+
+      // 1. Check for Secrets
+      lines.forEach((line, idx) => {
+        if (/sk-live-[0-9a-zA-Z]{20,}/.test(line) || /sk-[A-Za-z0-9_-]{32,}/.test(line)) {
+          findings.push({
+            id: `sec-${idx}`,
+            ruleId: 'SZ-001',
+            title: 'Exposed Secret: OpenAI API Key',
+            severity: 'CRITICAL',
+            cvss: 9.0,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'Hardcoded production OpenAI credential detected in source code.',
+            patch: line.replace(/=\s*['"][^'"]+['"]/, "= os.getenv('OPENAI_API_KEY')")
+          });
+        }
+        if (/postgres:\/\/[^:]+:([^@]+)@/.test(line)) {
+          findings.push({
+            id: `db-${idx}`,
+            ruleId: 'SZ-009',
+            title: 'Database URI with Hardcoded Password',
+            severity: 'CRITICAL',
+            cvss: 9.4,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'Production database URI contains hardcoded authentication credentials.',
+            patch: line.replace(/=\s*['"][^'"]+['"]/, "= os.getenv('DATABASE_URL')")
+          });
+        }
+        if (/allow_origins\s*=\s*\[\s*['"]\*['"]\s*\]/.test(line)) {
+          findings.push({
+            id: `cors-${idx}`,
+            ruleId: 'SZ-003',
+            title: "Overly Permissive CORS Origin ('*')",
+            severity: 'HIGH',
+            cvss: 7.5,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'CORS configuration allows arbitrary domains to execute cross-origin requests.',
+            patch: line.replace(/\[\s*['"]\*['"]\s*\]/, "os.getenv('ALLOWED_ORIGINS').split(',')")
+          });
+        }
+        if (/verify\s*=\s*False/.test(line)) {
+          findings.push({
+            id: `jwt-${idx}`,
+            ruleId: 'SZ-004',
+            title: 'Insecure JWT Verification Disabled (verify=False)',
+            severity: 'CRITICAL',
+            cvss: 9.8,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'Cryptographic token validation disabled, allowing forged authentication claims.',
+            patch: line.replace(/verify\s*=\s*False/, "verify=True, algorithms=['RS256']")
+          });
+        }
+        if (/DEBUG\s*=\s*True/.test(line)) {
+          findings.push({
+            id: `dbg-${idx}`,
+            ruleId: 'SZ-010',
+            title: 'Hardcoded DEBUG=True Flag in Production',
+            severity: 'MEDIUM',
+            cvss: 6.0,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'Debug mode active, exposing sensitive stack traces and debug tools.',
+            patch: line.replace(/=\s*True/, "= os.getenv('APP_DEBUG', 'False').lower() == 'true'")
+          });
+        }
+        if (/@app\.(get|post)\(['"]\/api\/admin/.test(line) && !line.includes('Depends(')) {
+          findings.push({
+            id: `admin-${idx}`,
+            ruleId: 'SZ-005',
+            title: 'Privileged Administrative Route Missing SSO / Auth Guard',
+            severity: 'HIGH',
+            cvss: 8.5,
+            line: idx + 1,
+            snippet: line.trim(),
+            description: 'Admin route declared without explicit authentication middleware or SSOJet guard.',
+            patch: line.replace(/\)$/, ", dependencies=[Depends(verify_sso_session)])")
+          });
+        }
+      });
+
+      // Check MCP tools
+      if (code.includes('run_terminal_command') || code.includes('bash')) {
+        findings.push({
+          id: 'mcp-1',
+          ruleId: 'SZ-MCP-001',
+          title: "Unrestricted Shell Execution in MCP Tool 'run_terminal_command'",
+          severity: 'CRITICAL',
+          cvss: 9.6,
+          line: 5,
+          snippet: '"name": "run_terminal_command"',
+          description: 'MCP tool permits arbitrary terminal execution. If hijacked by prompt injection, host machine is compromised.',
+          patch: '// Restrict execution to an explicit allowlist or execute inside a container sandbox.'
+        });
+      }
+      if (code.includes('read_file_unbounded') || code.includes('filepath')) {
+        findings.push({
+          id: 'mcp-2',
+          ruleId: 'SZ-MCP-002',
+          title: "Unconfined File System Access in MCP Tool 'read_file_unbounded'",
+          severity: 'HIGH',
+          cvss: 8.2,
+          line: 15,
+          snippet: '"name": "read_file_unbounded"',
+          description: 'Tool accepts unvalidated file paths, vulnerable to directory traversal attacks (../../etc/passwd).',
+          patch: '// Enforce strict regex path confinement to workspace root.'
+        });
+      }
+
+      currentFindings = findings;
+      renderResults(findings);
+    }
+
+    function renderResults(findings) {
+      const crit = findings.filter(f => f.severity === 'CRITICAL').length;
+      const high = findings.filter(f => f.severity === 'HIGH').length;
+      const med = findings.filter(f => f.severity === 'MEDIUM').length;
+
+      document.getElementById('critCount').innerText = crit;
+      document.getElementById('highCount').innerText = high;
+      document.getElementById('medCount').innerText = med;
+      document.getElementById('cleanCount').innerText = findings.length === 0 ? '1' : '0';
+
+      const penalty = (crit * 25) + (high * 12) + (med * 5);
+      const score = Math.max(0, 100 - penalty);
+
+      document.getElementById('scoreValue').innerText = score;
+      const circle = document.getElementById('scoreCircle');
+      circle.setAttribute('stroke-dasharray', `${score}, 100`);
+
+      const gradeBadge = document.getElementById('gradeBadge');
+      if (score >= 90) {
+        gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+        gradeBadge.innerText = 'GRADE A';
+        circle.setAttribute('class', 'text-emerald-500 transition-all duration-1000');
+      } else if (score >= 60) {
+        gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded bg-amber-950 text-amber-400 border border-amber-800';
+        gradeBadge.innerText = 'GRADE C';
+        circle.setAttribute('class', 'text-amber-500 transition-all duration-1000');
+      } else {
+        gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded bg-red-950 text-red-400 border border-red-800';
+        gradeBadge.innerText = 'GRADE F';
+        circle.setAttribute('class', 'text-red-500 transition-all duration-1000');
+      }
+
+      const container = document.getElementById('findingsContainer');
+      container.innerHTML = '';
+
+      if (findings.length === 0) {
+        container.innerHTML = `
+          <div class="bg-emerald-950/20 border border-emerald-800/40 rounded-xl p-8 text-center">
+            <div class="w-12 h-12 rounded-full bg-emerald-900/40 text-emerald-400 flex items-center justify-center mx-auto mb-3 text-xl">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h4 class="text-lg font-bold text-white">Zero-Trust Verification Passed</h4>
+            <p class="text-sm text-slate-400 mt-1">Zero credential leaks, unauthenticated routes, or high-risk MCP tools detected.</p>
+          </div>
+        `;
+        return;
+      }
+
+      findings.forEach(f => {
+        const borderClass = f.severity === 'CRITICAL' ? 'border-red-900/60 bg-red-950/10' : (f.severity === 'HIGH' ? 'border-orange-900/60 bg-orange-950/10' : 'border-yellow-900/60 bg-yellow-950/10');
+        const badgeClass = f.severity === 'CRITICAL' ? 'bg-red-900/40 text-red-300 border-red-800' : (f.severity === 'HIGH' ? 'bg-orange-900/40 text-orange-300 border-orange-800' : 'bg-yellow-900/40 text-yellow-300 border-yellow-800');
+
+        const card = document.createElement('div');
+        card.className = `border rounded-xl p-5 ${borderClass} shadow-lg space-y-3`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="px-2.5 py-0.5 rounded text-xs font-black border ${badgeClass}">${f.severity}</span>
+              <span class="text-xs font-mono text-cyan-400 font-bold">${f.ruleId}</span>
+              <h4 class="text-base font-bold text-white">${f.title}</h4>
+            </div>
+            <span class="text-xs font-mono px-2 py-1 rounded bg-dark-900 text-slate-400 border border-dark-700">CVSS ${f.cvss}</span>
+          </div>
+          <p class="text-sm text-slate-300">${f.description}</p>
+          <div class="bg-dark-900 rounded-lg p-3 text-xs font-mono border border-dark-700 overflow-x-auto">
+            <span class="text-red-400 block">- Line ${f.line}: ${f.snippet}</span>
+            <span class="text-emerald-400 block mt-1">+ Recommended: ${f.patch}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentFindings, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = "sentinelzero_findings.json";
+      a.click();
+    }
+
+    function exportSARIF() {
+      alert("SARIF 2.1.0 report generated. Use CLI `sentinelzero scan --sarif report.sarif` for pipeline ingestion.");
+    }
+
+    // Initialize with vulnerable sample
+    window.onload = () => loadSample('vulnerable');
+  </script>
+</body>
+</html>

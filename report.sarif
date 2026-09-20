@@ -1,0 +1,409 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SentinelZero",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/Naveen57990/SentinelZero",
+          "rules": [
+            {
+              "id": "SZ-001",
+              "name": "Exposed Secret: OpenAI API Key",
+              "shortDescription": {
+                "text": "Exposed Secret: OpenAI API Key"
+              },
+              "fullDescription": {
+                "text": "High-entropy credential (OpenAI API Key) hardcoded directly in source code. Exposed credentials can lead to full system/account takeover."
+              },
+              "help": {
+                "text": "Revoke this credential immediately. Store secrets in environment variables (.env) or a secret manager (Vault / AWS Secrets Manager)."
+              },
+              "properties": {
+                "cvss": 9.0,
+                "category": "Credential & Secret Exposure"
+              }
+            },
+            {
+              "id": "SZ-010",
+              "name": "Hardcoded DEBUG=True Flag in Production Code",
+              "shortDescription": {
+                "text": "Hardcoded DEBUG=True Flag in Production Code"
+              },
+              "fullDescription": {
+                "text": "Enabling debug mode in deployed applications exposes interactive tracebacks, internal server variables, and PIN-protected debug consoles."
+              },
+              "help": {
+                "text": "Load DEBUG flag dynamically from environment: DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'"
+              },
+              "properties": {
+                "cvss": 6.0,
+                "category": "Security Misconfiguration"
+              }
+            },
+            {
+              "id": "SZ-004",
+              "name": "Insecure JWT Verification Disabled (verify=False)",
+              "shortDescription": {
+                "text": "Insecure JWT Verification Disabled (verify=False)"
+              },
+              "fullDescription": {
+                "text": "JWT token validation explicitly disables cryptographic signature verification (verify=False), allowing attackers to forge arbitrary tokens."
+              },
+              "help": {
+                "text": "Remove verify=False and validate tokens against a secure public key or environment-managed secret."
+              },
+              "properties": {
+                "cvss": 9.8,
+                "category": "Broken Authentication & SSO"
+              }
+            },
+            {
+              "id": "SZ-008",
+              "name": "Insecure Deserialization via pickle.loads()",
+              "shortDescription": {
+                "text": "Insecure Deserialization via pickle.loads()"
+              },
+              "fullDescription": {
+                "text": "Deserializing untrusted data with pickle allows remote code execution through forged object reduction payloads."
+              },
+              "help": {
+                "text": "Use safe serialization formats such as JSON, Protocol Buffers, or messagepack instead of pickle."
+              },
+              "properties": {
+                "cvss": 9.8,
+                "category": "Injection & Untrusted Input"
+              }
+            },
+            {
+              "id": "SZ-009",
+              "name": "Database URI with Hardcoded Password",
+              "shortDescription": {
+                "text": "Database URI with Hardcoded Password"
+              },
+              "fullDescription": {
+                "text": "Database connection URI contains hardcoded authentication credentials, exposing database access if the repository is committed or leaked."
+              },
+              "help": {
+                "text": "Extract connection credentials into an encrypted environment variable: DATABASE_URL = os.getenv('DATABASE_URL')."
+              },
+              "properties": {
+                "cvss": 9.4,
+                "category": "Credential & Secret Exposure"
+              }
+            },
+            {
+              "id": "SZ-003",
+              "name": "Overly Permissive CORS Origin ('*')",
+              "shortDescription": {
+                "text": "Overly Permissive CORS Origin ('*')"
+              },
+              "fullDescription": {
+                "text": "Cross-Origin Resource Sharing (CORS) wildcard ('*') allows arbitrary external domains to make authenticated requests or read sensitive API responses."
+              },
+              "help": {
+                "text": "Restrict CORS origins to an explicit, authenticated domain whitelist (e.g. ['https://app.yourdomain.com'])."
+              },
+              "properties": {
+                "cvss": 7.5,
+                "category": "Security Misconfiguration"
+              }
+            },
+            {
+              "id": "SZ-005",
+              "name": "Privileged Administrative Route Missing SSO / Auth Guard",
+              "shortDescription": {
+                "text": "Privileged Administrative Route Missing SSO / Auth Guard"
+              },
+              "fullDescription": {
+                "text": "Admin or enterprise route declared without explicit authentication middleware or SSOJet/OIDC guard dependency."
+              },
+              "help": {
+                "text": "Apply zero-trust authorization middleware or an enterprise SSO guard: Depends(verify_sso_session)."
+              },
+              "properties": {
+                "cvss": 8.5,
+                "category": "Broken Authentication & SSO"
+              }
+            },
+            {
+              "id": "SZ-MCP-001",
+              "name": "Unrestricted Shell Execution in MCP Tool 'run_terminal_command'",
+              "shortDescription": {
+                "text": "Unrestricted Shell Execution in MCP Tool 'run_terminal_command'"
+              },
+              "fullDescription": {
+                "text": "Tool 'run_terminal_command' permits arbitrary command/terminal execution. If invoked by an LLM via prompt injection, an attacker can compromise the host machine."
+              },
+              "help": {
+                "text": "Restrict command execution to an explicit allowlist of non-destructive commands, enforce strict schema validation, or run in an isolated Docker sandbox."
+              },
+              "properties": {
+                "cvss": 9.6,
+                "category": "Excessive Permissions / MCP Risk"
+              }
+            },
+            {
+              "id": "SZ-MCP-002",
+              "name": "Unconfined File System Access in MCP Tool 'read_file_unbounded'",
+              "shortDescription": {
+                "text": "Unconfined File System Access in MCP Tool 'read_file_unbounded'"
+              },
+              "fullDescription": {
+                "text": "Tool 'read_file_unbounded' accepts file paths without root containment verification, exposing the host to directory traversal (e.g., accessing ../../etc/passwd or SSH keys)."
+              },
+              "help": {
+                "text": "Implement strict path normalization and chroot-like boundaries to confine all file operations to a dedicated workspace directory."
+              },
+              "properties": {
+                "cvss": 8.2,
+                "category": "Excessive Permissions / MCP Risk"
+              }
+            },
+            {
+              "id": "SZ-MCP-003",
+              "name": "Untyped Wildcard Parameter in MCP Tool 'read_file_unbounded' (filepath)",
+              "shortDescription": {
+                "text": "Untyped Wildcard Parameter in MCP Tool 'read_file_unbounded' (filepath)"
+              },
+              "fullDescription": {
+                "text": "Parameter 'filepath' in tool 'read_file_unbounded' has no type constraint, allowing arbitrary payload injection to the backend handler."
+              },
+              "help": {
+                "text": "Declare explicit schema types ('string', 'integer', 'boolean') and define regex patterns or enums."
+              },
+              "properties": {
+                "cvss": 5.5,
+                "category": "Security Misconfiguration"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "SZ-001",
+          "level": "error",
+          "message": {
+            "text": "Exposed Secret: OpenAI API Key: High-entropy credential (OpenAI API Key) hardcoded directly in source code. Exposed credentials can lead to full system/account takeover."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 12,
+                  "snippet": {
+                    "text": "OPENAI_API_KEY = \"sk-live-99182390812903810293810928301982\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-010",
+          "level": "warning",
+          "message": {
+            "text": "Hardcoded DEBUG=True Flag in Production Code: Enabling debug mode in deployed applications exposes interactive tracebacks, internal server variables, and PIN-protected debug consoles."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 27,
+                  "snippet": {
+                    "text": "DEBUG = True"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-004",
+          "level": "error",
+          "message": {
+            "text": "Insecure JWT Verification Disabled (verify=False): JWT token validation explicitly disables cryptographic signature verification (verify=False), allowing attackers to forge arbitrary tokens."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 37,
+                  "snippet": {
+                    "text": "decoded = jwt.decode(token, \"some_secret\", verify=False)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-008",
+          "level": "error",
+          "message": {
+            "text": "Insecure Deserialization via pickle.loads(): Deserializing untrusted data with pickle allows remote code execution through forged object reduction payloads."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 43,
+                  "snippet": {
+                    "text": "session = pickle.loads(raw_data)"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-009",
+          "level": "error",
+          "message": {
+            "text": "Database URI with Hardcoded Password: Database connection URI contains hardcoded authentication credentials, exposing database access if the repository is committed or leaked."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "DATABASE_URL = \"postgres://admin_user:SuperSecretPassword992@db.production.internal:5432/core_db\""
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-003",
+          "level": "error",
+          "message": {
+            "text": "Overly Permissive CORS Origin ('*'): Cross-Origin Resource Sharing (CORS) wildcard ('*') allows arbitrary external domains to make authenticated requests or read sensitive API responses."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 20,
+                  "snippet": {
+                    "text": "allow_origins=[\"*\"],"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-005",
+          "level": "error",
+          "message": {
+            "text": "Privileged Administrative Route Missing SSO / Auth Guard: Admin or enterprise route declared without explicit authentication middleware or SSOJet/OIDC guard dependency."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "server.py"
+                },
+                "region": {
+                  "startLine": 30,
+                  "snippet": {
+                    "text": "@app.get(\"/api/admin/users\")"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-MCP-001",
+          "level": "error",
+          "message": {
+            "text": "Unrestricted Shell Execution in MCP Tool 'run_terminal_command': Tool 'run_terminal_command' permits arbitrary command/terminal execution. If invoked by an LLM via prompt injection, an attacker can compromise the host machine."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "mcp_tools.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "{\n  \"name\": \"run_terminal_command\",\n  \"description\": \"Execute arbitrary bash or shell commands on the host machine\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"command\": {\n   "
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-MCP-002",
+          "level": "error",
+          "message": {
+            "text": "Unconfined File System Access in MCP Tool 'read_file_unbounded': Tool 'read_file_unbounded' accepts file paths without root containment verification, exposing the host to directory traversal (e.g., accessing ../../etc/passwd or SSH keys)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "mcp_tools.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "{\n  \"name\": \"read_file_unbounded\",\n  \"description\": \"Read file system paths without boundary verification\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"filepath\": {}\n    }\n  }\n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "SZ-MCP-003",
+          "level": "warning",
+          "message": {
+            "text": "Untyped Wildcard Parameter in MCP Tool 'read_file_unbounded' (filepath): Parameter 'filepath' in tool 'read_file_unbounded' has no type constraint, allowing arbitrary payload injection to the backend handler."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "mcp_tools.json"
+                },
+                "region": {
+                  "startLine": 1,
+                  "snippet": {
+                    "text": "\"filepath\": {}"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "vulnerable-agent-server",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "run_terminal_command",
+      "description": "Execute arbitrary bash or shell commands on the host machine",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string"
+          }
+        },
+        "required": ["command"]
+      }
+    },
+    {
+      "name": "read_file_unbounded",
+      "description": "Read file system paths without boundary verification",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filepath": {}
+        }
+      }
+    }
+  ]
+}
