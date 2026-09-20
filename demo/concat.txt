@@ -1,11 +1,11 @@
 file 'frames/slide_1.png'
-duration 6
+duration 17
 file 'frames/slide_2.png'
-duration 10
+duration 15
 file 'frames/slide_3.png'
-duration 18
+duration 21
 file 'frames/slide_4.png'
-duration 14
+duration 16
 file 'frames/slide_5.png'
-duration 12
+duration 15
 file 'frames/slide_5.png'
