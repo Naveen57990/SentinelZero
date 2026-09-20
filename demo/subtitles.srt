@@ -1,0 +1,51 @@
+1
+00:00:00,500 --> 00:00:06,000
+As developers build autonomous AI agents and cloud APIs,
+
+2
+00:00:06,000 --> 00:00:11,500
+they are silently introducing critical security vulnerabilities:
+
+3
+00:00:11,500 --> 00:00:17,500
+exposed production keys, missing SSO gates, and unconfined MCP tools with shell execution.
+
+4
+00:00:17,500 --> 00:00:23,000
+Meet SentinelZero: an autonomous, developer-first zero-trust security auditor.
+
+5
+00:00:23,000 --> 00:00:31,500
+Engineered with deterministic AST parsing, Shannon entropy mathematics, and specialized MCP inspection.
+
+6
+00:00:31,500 --> 00:00:38,000
+In a single command, SentinelZero audits your entire codebase in under two milliseconds.
+
+7
+00:00:38,000 --> 00:00:46,000
+Here, it flags critical vulnerabilities: a leaked OpenAI key, an insecure JWT bypass, a database password,
+
+8
+00:00:46,000 --> 00:00:52,700
+and an unrestricted terminal tool execution hazard, computing an urgent Posture Score of Grade F.
+
+9
+00:00:52,700 --> 00:00:58,500
+Now watch the live production dashboard in action.
+
+10
+00:00:58,500 --> 00:01:05,000
+As we run the zero-trust audit, SentinelZero evaluates the live code and computes the visual posture ring,
+
+11
+00:01:05,000 --> 00:01:11,500
+flags unconfined MCP tools, and verifies compliance once remediated, bringing our score back to Grade A.
+
+12
+00:01:11,500 --> 00:01:18,500
+Built for the TLN Cybersecurity Challenge 2026, SentinelZero is open-source and fully tested.
+
+13
+00:01:18,500 --> 00:01:26,500
+Try it today live at web-theta-tawny-78.vercel.app.

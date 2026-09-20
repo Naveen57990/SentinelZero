@@ -105,9 +105,9 @@ create_slide(
         "Enterprise SSO Alignment: Validates OIDC, SAML, and SSOJet zero-trust authorization"
     ],
     highlight_box=[
-        ("⚡ SUB-2 MILLISECOND AUDIT ENGINE — ZERO CLOUD BLOAT", (6, 182, 212)),
-        ("🛡️ OASIS SARIF 2.1.0 COMPLIANT — GITHUB ACTIONS NATIVE", (59, 130, 246)),
-        ("🛠️ 1-CLICK AUTOMATED ZERO-TRUST REMEDIATION PATCHES", (16, 185, 129))
+        ("[BENCHMARK] SUB-2 MILLISECOND AUDIT ENGINE - ZERO CLOUD BLOAT", (6, 182, 212)),
+        ("[STANDARDS] OASIS SARIF 2.1.0 COMPLIANT - GITHUB ACTIONS NATIVE", (59, 130, 246)),
+        ("[AUTOMATION] 1-CLICK AUTOMATED ZERO-TRUST REMEDIATION PATCHES", (16, 185, 129))
     ],
     footer_text="Phase 2/4: Solution Architecture | SentinelZero v1.0.0",
     filename="slide_2.png"
@@ -126,9 +126,9 @@ create_slide(
     ],
     highlight_box=[
         ("$ sentinelzero scan ./enterprise-agent-api", (148, 163, 184)),
-        ("🛡️ Posture Evaluation: 0/100 (Grade F - Severe Exposure Risk)", (239, 68, 68)),
-        ("🚨 5 Critical | 3 High | 2 Medium Vulnerabilities Flagged in 1.26ms", (249, 115, 22)),
-        ("✓ Exported OASIS SARIF report for GitHub Code Scanning pipeline", (16, 185, 129))
+        ("[POSTURE EVALUATION] Score: 0/100 (Grade F - Severe Exposure Risk)", (239, 68, 68)),
+        ("[ALERT SUMMARY] 5 Critical | 3 High | 2 Medium Vulnerabilities Flagged in 1.26ms", (249, 115, 22)),
+        ("[EXPORT SUCCESS] Generated OASIS SARIF report for GitHub Code Scanning pipeline", (16, 185, 129))
     ],
     footer_text="Phase 3/4: Technical Execution | Sub-2ms Multi-Vector AST Engine",
     filename="slide_3.png"
@@ -147,9 +147,9 @@ create_slide(
     ],
     highlight_box=[
         ("$ sentinelzero scan ./my-project --fix", (148, 163, 184)),
-        ("✓ Patched SZ-001: Extracted OPENAI_API_KEY into secure environment boundary", (16, 185, 129)),
-        ("✓ Patched SZ-004: Enforced cryptographic signature verification (RS256)", (16, 185, 129)),
-        ("🛡️ Security Posture Recovered: 100/100 (Grade A - Zero-Trust Compliant)", (6, 182, 212))
+        ("[PATCH SZ-001] Extracted OPENAI_API_KEY into secure environment boundary", (16, 185, 129)),
+        ("[PATCH SZ-004] Enforced cryptographic signature verification (RS256)", (16, 185, 129)),
+        ("[RECOVERY COMPLETED] Security Posture: 100/100 (Grade A - Zero-Trust Compliant)", (6, 182, 212))
     ],
     footer_text="Phase 4/4: Remediation & Production | Vercel Live Deployment",
     filename="slide_4.png"
@@ -167,9 +167,9 @@ create_slide(
         "Try It Today: https://web-theta-tawny-78.vercel.app"
     ],
     highlight_box=[
-        ("🔗 LIVE DEMO: https://web-theta-tawny-78.vercel.app", (6, 182, 212)),
-        ("💻 GITHUB REPOSITORY: https://github.com/Naveen57990/SentinelZero", (148, 163, 184)),
-        ("🏆 TLN CYBERSECURITY HACKATHON 2026 SUBMISSION READY", (234, 179, 8))
+        ("LIVE PRODUCTION DEMO: https://web-theta-tawny-78.vercel.app", (6, 182, 212)),
+        ("GITHUB REPOSITORY: https://github.com/Naveen57990/SentinelZero", (148, 163, 184)),
+        ("TLN CYBERSECURITY HACKATHON 2026 SUBMISSION READY", (234, 179, 8))
     ],
     footer_text="SentinelZero | Autonomous Opportunity & Engineering Agent: NOXScout | Naveen57990",
     filename="slide_5.png"
