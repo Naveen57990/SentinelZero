@@ -20,26 +20,26 @@ with sync_playwright() as p:
     
     print("Navigating to live production dashboard...")
     page.goto("https://web-theta-tawny-78.vercel.app", wait_until="networkidle")
-    time.sleep(1.5)
+    time.sleep(2.0)
 
     # 1. Show initial vulnerable state
     print("Auditing vulnerable state...")
     page.click("button:has-text('Run Zero-Trust Audit')")
-    time.sleep(3.0)
+    time.sleep(4.0)
 
     # 2. Switch to MCP Agent
     print("Loading MCP Agent schema...")
     page.click("button:has-text('Load MCP Agent')")
-    time.sleep(2.0)
+    time.sleep(2.5)
     page.click("button:has-text('Run Zero-Trust Audit')")
-    time.sleep(3.0)
+    time.sleep(4.5)
 
     # 3. Switch to Zero-Trust Secure state
     print("Loading Zero-Trust Secure state...")
     page.click("button:has-text('Load Zero-Trust')")
-    time.sleep(2.0)
+    time.sleep(2.5)
     page.click("button:has-text('Run Zero-Trust Audit')")
-    time.sleep(3.5)
+    time.sleep(5.5)
 
     context.close()
     browser.close()

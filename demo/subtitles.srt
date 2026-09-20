@@ -1,51 +1,55 @@
 1
-00:00:00,500 --> 00:00:06,000
-As developers build autonomous AI agents and cloud APIs,
+00:00:00,500 --> 00:00:07,000
+Hey everyone! As developers, we are rapidly building autonomous AI agents and cloud APIs.
 
 2
-00:00:06,000 --> 00:00:11,500
-they are silently introducing critical security vulnerabilities:
+00:00:07,200 --> 00:00:15,000
+But here's the dangerous part: we're silently introducing critical security vulnerabilities.
 
 3
-00:00:11,500 --> 00:00:17,500
-exposed production keys, missing SSO gates, and unconfined MCP tools with shell execution.
+00:00:15,200 --> 00:00:25,200
+Things like hardcoded production keys, missing enterprise SSO gates, and MCP tools with unrestricted shell execution.
 
 4
-00:00:17,500 --> 00:00:23,000
-Meet SentinelZero: an autonomous, developer-first zero-trust security auditor.
+00:00:25,800 --> 00:00:32,000
+That's why we built SentinelZero: an autonomous, developer-first zero-trust security auditor.
 
 5
-00:00:23,000 --> 00:00:31,500
-Engineered with deterministic AST parsing, Shannon entropy mathematics, and specialized MCP inspection.
+00:00:32,200 --> 00:00:46,600
+We engineered it from scratch with deterministic AST parsing, Shannon entropy mathematics, and specialized boundary inspection for Model Context Protocol agents.
 
 6
-00:00:31,500 --> 00:00:38,000
-In a single command, SentinelZero audits your entire codebase in under two milliseconds.
+00:00:47,000 --> 00:00:54,500
+In a single command, SentinelZero audits your entire codebase in under two milliseconds!
 
 7
-00:00:38,000 --> 00:00:46,000
-Here, it flags critical vulnerabilities: a leaked OpenAI key, an insecure JWT bypass, a database password,
+00:00:54,700 --> 00:01:03,500
+Take a look right here. It immediately flags critical exposures: a leaked OpenAI key, an insecure JWT bypass,
 
 8
-00:00:46,000 --> 00:00:52,700
-and an unrestricted terminal tool execution hazard, computing an urgent Posture Score of Grade F.
+00:01:03,700 --> 00:01:10,200
+and a dangerous terminal tool hazard, computing an urgent Posture Score of Grade F.
 
 9
-00:00:52,700 --> 00:00:58,500
-Now watch the live production dashboard in action.
+00:01:10,800 --> 00:01:17,500
+Now, let's look at our live production dashboard in action.
 
 10
-00:00:58,500 --> 00:01:05,000
-As we run the zero-trust audit, SentinelZero evaluates the live code and computes the visual posture ring,
+00:01:17,700 --> 00:01:25,500
+As we run the zero-trust audit, SentinelZero evaluates the live code in real time.
 
 11
-00:01:05,000 --> 00:01:11,500
-flags unconfined MCP tools, and verifies compliance once remediated, bringing our score back to Grade A.
+00:01:25,700 --> 00:01:35,300
+It visualizes our security posture ring, flags unconfined MCP tools, and verifies compliance once remediated, bringing our score right back to Grade A.
 
 12
-00:01:11,500 --> 00:01:18,500
-Built for the TLN Cybersecurity Challenge 2026, SentinelZero is open-source and fully tested.
+00:01:35,800 --> 00:01:43,000
+We built SentinelZero specifically for the TLN Cybersecurity Challenge 2026.
 
 13
-00:01:18,500 --> 00:01:26,500
-Try it today live at web-theta-tawny-78.vercel.app.
+00:01:43,200 --> 00:01:52,500
+It is completely open-source, verified with a 100% passing test suite, and deployed live on Vercel.
+
+14
+00:01:52,700 --> 00:02:00,000
+Try it out today at web-theta-tawny-78.vercel.app. Thank you!
